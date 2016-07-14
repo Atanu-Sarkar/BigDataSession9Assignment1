@@ -1,0 +1,33 @@
+============================================================================
+1. What is the total amount of petrol in volume sold by every distributer?
+=============================================================================
+distributor = LOAD 'Petrol_DataSet.txt' USING PigStorage(',') AS (DistributorID:Chararray,DistributerName:Chararray,BuyRate:chararray,SellRate:chararray,VolumeIn:int,VolumeOut:int,Year:int);
+sale_distributor = FOREACH distributor GENERATE DistributerName, VolumeOut;
+group_distributor = GROUP  sale_distributor BY DistributerName;
+soldby_every_Distributor = FOREACH group_distributor GENERATE group , SUM(sale_distributor.VolumeOut);
+
+=========================================================================================
+2. Which are the top 10 distributers ID's for selling petrol? Also display the amount of
+petrol sold in volume.
+========================================================================================== 
+distributor = LOAD 'Petrol_DataSet.txt' USING PigStorage(',') AS (DistributorID:Chararray,DistributerName:Chararray,BuyRate:chararray,SellRate:chararray,VolumeIn:int,VolumeOut:int,Year:int);
+order_distributor = order distributor by VolumeOut desc;
+top10_distributor = limit order_distributor 10;
+top10_distributor_id = foreach top10_distributor generate DistributorID;
+sale_top10_distributor_id = foreach top10_distributor generate DistributorID,VolumeOut;
+
+==================================================================================
+3. List 10 years where consumption of petrol is more with the distributer id who sold it.
+==================================================================================
+distributor = LOAD 'Petrol_DataSet.txt' USING PigStorage(',') AS (DistributorID:Chararray,DistributerName:Chararray,BuyRate:chararray,SellRate:chararray,VolumeIn:int,VolumeOut:int,Year:int);
+order_distributor = order distributor by VolumeOut desc;
+top10_distributor = limit order_distributor 10;
+distributor_year_consumption = foreach top10_distributor generate DistributorID,Year,VolumeOut;
+
+====================================================================================
+4. Find the distributer name who sold petrol in least amount.
+===================================================================================
+distributor = LOAD 'Petrol_DataSet.txt' USING PigStorage(',') AS (DistributorID:Chararray,DistributerName:Chararray,BuyRate:chararray,SellRate:chararray,VolumeIn:int,VolumeOut:int,Year:int);
+order_distributor = order distributor by VolumeOut asc;
+least_amt_distributor = limit order_distributor 1;
+least_amt_distributor_name = foreach least_amt_distributor generate DistributorID,DistributerName,VolumeOut,Year;
